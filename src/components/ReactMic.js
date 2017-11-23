@@ -19,7 +19,8 @@ export default class ReactMic extends Component {
       analyser            : null,
       microphoneRecorder  : null,
       canvas              : null,
-      canvasCtx           : null
+      canvasCtx           : null,
+      err                 : false,
     }
   }
 
@@ -82,17 +83,27 @@ export default class ReactMic extends Component {
 
   render() {
     const { record, onStop, width, height } = this.props;
-    const { analyser,  microphoneRecorder, canvasCtx } = this.state;
-
-    if(record) {
+    const { analyser,  microphoneRecorder, canvasCtx, err } = this.state;
+    const $this = this;
+    if(record && !err) {
       if(microphoneRecorder) {
-        microphoneRecorder.startRecording();
+        microphoneRecorder.startRecording( function (err) {
+          if(err) { 
+            $this.setState({
+              err:true 
+            });
+          }
+        });
       }
     } else {
       if (microphoneRecorder) {
         microphoneRecorder.stopRecording(onStop);
         this.clear();
       }
+    }
+
+    if(err){
+      return (<p>Error: permisos requeridos</p>);
     }
 
     return (<canvas ref="visualizer" height={height} width={width} className={this.props.className}></canvas>);

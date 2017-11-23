@@ -25,7 +25,7 @@ export class MicrophoneRecorder {
     mediaOptions= options;
   }
 
-  startRecording=() => {
+  startRecording=(cb) => {
 
     startTime = Date.now();
 
@@ -74,6 +74,8 @@ export class MicrophoneRecorder {
           const source = audioCtx.createMediaStreamSource(stream);
           source.connect(analyser);
 
+        }).catch(function(err) {
+          cb(err);
         });
       } else {
         alert('Your browser does not support audio recording');
